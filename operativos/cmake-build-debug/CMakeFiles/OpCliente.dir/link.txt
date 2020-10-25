@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/OpCliente.dir/main.c.o  -o OpCliente  -pthread 
