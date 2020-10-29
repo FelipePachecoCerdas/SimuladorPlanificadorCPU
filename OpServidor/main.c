@@ -31,7 +31,10 @@ struct proceso_PCB {
 };
 
 int pidActual = 0, segundoActual = 0;
+
 enlace listaProcesos = NULL;
+
+pthread_t hiloJobScheduler, hiloCpuScheduler, hiloTimer;
 
 void CpuScheduler() {
     // algo
@@ -86,7 +89,7 @@ void JobScheduler(){
     fd_set readfds;
 
     //a message
-    char *message = "Mensaje recibido correctamente \r\n";
+    char *message = malloc(1024);
 
     //initialise all client_socket[] to 0 so not checked
     for (i = 0; i < max_clients; i++)
@@ -121,7 +124,7 @@ void JobScheduler(){
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
-    printf("Listener on port %d \n", PORT);
+    printf("\nEl servidor se ha iniciado y esta escuchando en el puerto %d \n", PORT);
 
     //try to specify maximum of 3 pending connections for the master socket
     if (listen(master_socket, 3) < 0)
@@ -132,7 +135,7 @@ void JobScheduler(){
 
     //accept the incoming connection
     addrlen = sizeof(address);
-    puts("Waiting for connections ...");
+    puts("Esperando conexiones cliente ...");
 
     while(TRUE)
     {
@@ -179,21 +182,22 @@ void JobScheduler(){
             }
 
             //inform user of socket number - used in send and receive commands
-            printf("New connection , socket fd is %d , ip is : %s , port : %d\n"
+            printf("\nNueva conexion de cliente con socket fd de %d, ip %s y puerto %d\n"
                    , new_socket , inet_ntoa(address.sin_addr) , ntohs
                     (address.sin_port));
 
-            //send new connection greeting message
+            valread = read( new_socket , buffer, 1024);
+            //printf("K %s K\n",buffer );
+            int pidNuevoProceso = insertarProceso(buffer);
+            printf("Nuevo proceso creado del cliente con PID %i\n", pidNuevoProceso);
+
+            //puts("Welcome message sent successfully");
+            sprintf(message, "Se ha creado el proceso con PID %i para incluirlo en la simulacion\n", pidNuevoProceso);
+            //send new connection message
             if( send(new_socket, message, strlen(message), 0) != strlen(message) )
             {
                 perror("send");
             }
-            valread = read( new_socket , buffer, 1024);
-            printf("K %s K\n",buffer );
-            int pidNuevoProceso = insertarProceso(buffer);
-            printf("Nuevo proceso creado de pid %i\n", pidNuevoProceso);
-
-            puts("Welcome message sent successfully");
 
             //add new socket to array of sockets
             for (i = 0; i < max_clients; i++)
@@ -202,7 +206,7 @@ void JobScheduler(){
                 if( client_socket[i] == 0 )
                 {
                     client_socket[i] = new_socket;
-                    printf("Adding to list of sockets as %d\n" , i);
+                    //printf("Adding to list of sockets as %d\n" , i);
 
                     break;
                 }
@@ -223,7 +227,7 @@ void JobScheduler(){
                     //Somebody disconnected , get his details and print
                     getpeername(sd , (struct sockaddr*)&address , \
                         (socklen_t*)&addrlen);
-                    printf("Host disconnected , ip %s , port %d \n" ,
+                    printf("\nCliente con ip %s y puerto %d se ha desconectado \n" ,
                            inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
 
                     //Close the socket and mark as 0 in list for reuse
@@ -246,22 +250,52 @@ void JobScheduler(){
 }
 
 void desplegarColaProcesos() {
+    if (listaProcesos == NULL) {
+        printf("Actualmente la cola de procesos se encuentra vacia\n");
+        return;
+    }
+
     enlace listaProcesosIterar = listaProcesos;
+
+    printf("%-20s %-20s %-20s %-20s %-20s %-20s\n", "PID (Identificador)", "Burst Actual", "Burst Original", "Prioridad", "Tiempo Llegada", "Tiempo Finalizacion");
     while (listaProcesosIterar) {
-        printf("%i %i %i %i %i %i \n", listaProcesosIterar->pid, listaProcesosIterar->tiempoLlegada,
-               listaProcesosIterar->tiempoFinalizacion, listaProcesosIterar->burst,
-               listaProcesosIterar->burstOriginal, listaProcesosIterar->prioridad);
+        printf("%-20i %-20i %-20i %-20i %-20i %-20i \n", listaProcesosIterar->pid,  listaProcesosIterar->burst,
+               listaProcesosIterar->burstOriginal, listaProcesosIterar->prioridad,
+               listaProcesosIterar->tiempoLlegada, listaProcesosIterar->tiempoFinalizacion);
         listaProcesosIterar = listaProcesosIterar->siguiente;
     }
 }
 
 void detenerSimulacion() {
+    // Se van a matar los hilos por seguridad
+    pthread_cancel(hiloJobScheduler);
+    pthread_cancel(hiloCpuScheduler);
+    pthread_cancel(hiloTimer);
 
+    printf("\nSe ha detenido la simulacion del planificador de CPU\nA continuacion se muestra la siguiente informacion resumen de la simulacion\n\n");
+    int cantidadProcesos = pidActual + 1, acumuladoTAT = 0, acumuladoWT = 0;
+    printf("Cantidad de procesos ejecutados: %i\n", cantidadProcesos); // OJO?????
+    printf("Cantidad de segundos con CPU ocioso: %i\n", 42);
+    printf("\nTabla resumen de procesos\n\n");
+    printf("%-25s %-25s %-25s\n", "PID (Identificador)", "TAT (Turn Around Time)", "WT (Waiting Time)");
+    for (enlace listaProcesosIterar = listaProcesos; listaProcesosIterar; listaProcesosIterar = listaProcesosIterar->siguiente) {
+        int tat = listaProcesosIterar->tiempoFinalizacion - listaProcesosIterar->tiempoLlegada;
+        int wt = tat - listaProcesosIterar->burstOriginal;
+        acumuladoTAT += tat;
+        acumuladoWT += wt;
+        printf("%-25i %-25i %-25i\n", listaProcesosIterar->pid, tat, wt);
+    }
+    double promedioWT = (acumuladoWT * 1.0) / cantidadProcesos;
+    printf("\nPromedio de Waiting Time: %f\n", promedioWT);
+    double promedioTAT = (acumuladoTAT * 1.0) / cantidadProcesos;
+    printf("\nPromedio de Turn Around Time: %f\n", promedioTAT);
 }
 
 int main() {
-    printf("Opciones para Algoritmos del Simulador del Planificador de CPU\n");
-    printf("Digite alguno de las siguientes opciones mediante su correspondiente digito para elegir el algoritmo\n");
+    printf("!Bienvenido al Servidor del Simulador del Planificador de CPU!\n\n");
+
+    printf("*** Opciones para Algoritmos del Simulador del Planificador de CPU ***\n");
+    printf("Digite alguna de las siguientes opciones mediante su correspondiente digito para elegir el algoritmo\n");
     printf("1. FIFO (First In First Out)\n");
     printf("2. SJF (Shortest Job First)\n");
     printf("3. SJF Apropiativo (Shortest Job First)\n");
@@ -289,19 +323,16 @@ int main() {
 
     }
 
-    pthread_t hiloJobScheduler, hiloCpuScheduler, hiloTimer;
-
     pthread_create(&hiloTimer, NULL , Timer , NULL);
     pthread_create(&hiloJobScheduler, NULL , JobScheduler , NULL);
     pthread_create(&hiloCpuScheduler, NULL , CpuScheduler , NULL);
 
     int opcionSimulador = 0;
-    printf("Menu del Simulador del Planificador de CPU\n");
-    printf("Digite alguno de las siguientes opciones mediante su correspondiente digito para ejecutar la accion\n");
+    printf("\n ***Menu del Simulador del Planificador de CPU ***\n");
+    printf("Digite alguno de las siguientes opciones en cualquier momento mediante su correspondiente digito para ejecutar la accion\n");
     printf("1. Consultar cola de procesos\n");
     printf("2. Detener simulacion\n");
     for(;;) {
-        printf("Digite la opcion: ");
         scanf("%i", &opcionSimulador);
         if (opcionSimulador != 1 && opcionSimulador != 2) {
             printf("Opcion incorrecta. Intentelo de nuevo.\n");
@@ -312,6 +343,7 @@ int main() {
         else detenerSimulacion();
 
     }
+    printf("\n");
 
     pthread_join(hiloJobScheduler, NULL);
     pthread_join(hiloCpuScheduler, NULL);
