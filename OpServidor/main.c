@@ -15,16 +15,62 @@
 #include <netinet/in.h>
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
 #define TRUE   1
 #define FALSE  0
 #define PORT 8080
 
+struct proceso_PCB;
+
+typedef struct proceso_PCB* enlace;
+
 struct proceso_PCB {
     int pid, tiempoLlegada, tiempoFinalizacion, burst, burstOriginal, prioridad;
+    enlace siguiente;
 };
+
+int pidActual = 0, segundoActual = 0;
+enlace listaProcesos = NULL;
 
 void CpuScheduler() {
     // algo
+}
+
+void Timer() {
+    for (;;) {
+        segundoActual++;
+        sleep(1);
+    }
+}
+
+enlace crearProcesoPCB(int pid, int burst, int prioridad){
+    enlace nuevoProceso = malloc(sizeof(struct proceso_PCB));
+    nuevoProceso->pid = pid;
+    nuevoProceso->burstOriginal = nuevoProceso->burst = burst;
+    nuevoProceso->prioridad = prioridad;
+    nuevoProceso->tiempoLlegada = segundoActual;
+    nuevoProceso->tiempoFinalizacion = 0;
+    nuevoProceso->siguiente = NULL;
+    return nuevoProceso;
+};
+
+
+int insertarProceso(char *informacion) {
+    int burst, prioridad;
+    sscanf(informacion, "%i %i", &burst, &prioridad);
+    enlace nuevoProceso = crearProcesoPCB(pidActual++, burst, prioridad);
+
+    if (listaProcesos == NULL){
+        listaProcesos = nuevoProceso;
+        return nuevoProceso->pid;
+    }
+
+    enlace listaProcesosIterar = listaProcesos;
+    while (listaProcesosIterar->siguiente)
+        listaProcesosIterar = listaProcesosIterar->siguiente;
+    listaProcesosIterar->siguiente = nuevoProceso;
+    return nuevoProceso->pid;
 }
 
 void JobScheduler(){
@@ -143,7 +189,10 @@ void JobScheduler(){
                 perror("send");
             }
             valread = read( new_socket , buffer, 1024);
-            printf("%s\n",buffer );
+            printf("K %s K\n",buffer );
+            int pidNuevoProceso = insertarProceso(buffer);
+            printf("Nuevo proceso creado de pid %i\n", pidNuevoProceso);
+
             puts("Welcome message sent successfully");
 
             //add new socket to array of sockets
@@ -196,13 +245,79 @@ void JobScheduler(){
 
 }
 
+void desplegarColaProcesos() {
+    enlace listaProcesosIterar = listaProcesos;
+    while (listaProcesosIterar) {
+        printf("%i %i %i %i %i %i \n", listaProcesosIterar->pid, listaProcesosIterar->tiempoLlegada,
+               listaProcesosIterar->tiempoFinalizacion, listaProcesosIterar->burst,
+               listaProcesosIterar->burstOriginal, listaProcesosIterar->prioridad);
+        listaProcesosIterar = listaProcesosIterar->siguiente;
+    }
+}
+
+void detenerSimulacion() {
+
+}
+
 int main() {
-    pthread_t hiloJobScheduler, hiloCpuScheduler;
+    printf("Opciones para Algoritmos del Simulador del Planificador de CPU\n");
+    printf("Digite alguno de las siguientes opciones mediante su correspondiente digito para elegir el algoritmo\n");
+    printf("1. FIFO (First In First Out)\n");
+    printf("2. SJF (Shortest Job First)\n");
+    printf("3. SJF Apropiativo (Shortest Job First)\n");
+    printf("4. HPF (High Priority First)\n");
+    printf("5. HPF Apropiativo (High Priority First)\n");
+    printf("6. Round Robin\n");
 
+    int opcionAlgoritmo;
+    for(;;) {
+        printf("Digite la opcion: ");
+        scanf("%i", &opcionAlgoritmo);
+
+        if (opcionAlgoritmo <= 0 || opcionAlgoritmo >= 7) {
+            printf("Opcion incorrecta. Intentelo de nuevo.\n");
+            continue;
+        }
+
+        if (opcionAlgoritmo == 6) {
+            int quantum;
+            printf("Indique el quantum deseado para el algoritmo Round Robin: ");
+            scanf("%i", &quantum);
+        }
+        // ALGO AQUI (?
+        break;
+
+    }
+
+    pthread_t hiloJobScheduler, hiloCpuScheduler, hiloTimer;
+
+    pthread_create(&hiloTimer, NULL , Timer , NULL);
     pthread_create(&hiloJobScheduler, NULL , JobScheduler , NULL);
-    pthread_join(hiloJobScheduler, NULL);
-
     pthread_create(&hiloCpuScheduler, NULL , CpuScheduler , NULL);
+
+    int opcionSimulador = 0;
+    printf("Menu del Simulador del Planificador de CPU\n");
+    printf("Digite alguno de las siguientes opciones mediante su correspondiente digito para ejecutar la accion\n");
+    printf("1. Consultar cola de procesos\n");
+    printf("2. Detener simulacion\n");
+    for(;;) {
+        printf("Digite la opcion: ");
+        scanf("%i", &opcionSimulador);
+        if (opcionSimulador != 1 && opcionSimulador != 2) {
+            printf("Opcion incorrecta. Intentelo de nuevo.\n");
+            continue;
+        }
+
+        if (opcionSimulador == 1) desplegarColaProcesos();
+        else detenerSimulacion();
+
+    }
+
+    pthread_join(hiloJobScheduler, NULL);
     pthread_join(hiloCpuScheduler, NULL);
+    pthread_join(hiloTimer, NULL);
+
     return 0;
 }
+
+#pragma clang diagnostic pop

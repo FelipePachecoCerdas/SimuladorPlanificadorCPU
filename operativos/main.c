@@ -44,7 +44,7 @@ int hacerSocket(char *hello ){
         printf("\nConnection Failed \n");
         return -1;
     }
-    send(sock , hello , strlen(hello) , 0 );
+    send(sock , hello , 1024 , 0 );
     //printf("Hello message sent\n");
     valread = read( sock , buffer, 1024);
     printf("%s\n",buffer );
@@ -99,6 +99,9 @@ void crearProcesoAuto(void *input){
     int lowerPriori = 1;
     int prioridad = (rand() % (upperPriori - lowerPriori + 1)) + lowerPriori;
 
+    char * str = malloc(1024);
+    snprintf(str, "WTFFFFF %i %i", burst, prioridad);
+/*
     char pr1[11];
     sprintf(pr1 , "%ld" , burst);
     char pr2[11];
@@ -110,11 +113,12 @@ void crearProcesoAuto(void *input){
     strcat(str, " ");
     strcat(str, pr2);
     //strcat(str, "\n");
-    printf("%s", str);
     char * pointer = &str[0];
+*/
+    printf("%s", str);
 
     usleep (2000000) ; //Espera 2 segundos para enviar la informacion
-    hacerSocket(pointer);
+    hacerSocket(str);
 
 }
 
