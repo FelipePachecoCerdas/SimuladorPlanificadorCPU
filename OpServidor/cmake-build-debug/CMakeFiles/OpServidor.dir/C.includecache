@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/bernold/CLionProjects/OpServidor/main.c
+/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/OpServidor/main.c
 stdio.h
 -
 stdlib.h

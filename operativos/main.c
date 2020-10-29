@@ -67,7 +67,7 @@ void clienteManual (){
     size_t len = 0;
     ssize_t read;
 
-    fp = fopen("/home/bernold/CLionProjects/operativos/entrada.txt", "r");
+    fp = fopen("/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/operativos/entrada.txt", "r");
     if (fp == NULL)
         exit(1);
 

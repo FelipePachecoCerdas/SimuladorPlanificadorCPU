@@ -19,7 +19,15 @@
 #define FALSE  0
 #define PORT 8080
 
-void hacerSocket(){
+struct proceso_PCB {
+    int pid, tiempoLlegada, tiempoFinalizacion, burst, burstOriginal, prioridad;
+};
+
+void CpuScheduler() {
+    // algo
+}
+
+void JobScheduler(){
     int opt = TRUE;
     int master_socket , addrlen , new_socket , client_socket[30] ,
             max_clients = 30 , activity, i , valread , sd;
@@ -187,7 +195,14 @@ void hacerSocket(){
     }
 
 }
+
 int main() {
-    hacerSocket();
+    pthread_t hiloJobScheduler, hiloCpuScheduler;
+
+    pthread_create(&hiloJobScheduler, NULL , JobScheduler , NULL);
+    pthread_join(hiloJobScheduler, NULL);
+
+    pthread_create(&hiloCpuScheduler, NULL , CpuScheduler , NULL);
+    pthread_join(hiloCpuScheduler, NULL);
     return 0;
 }
