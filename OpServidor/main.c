@@ -124,9 +124,11 @@ int *algoritmoHPF(int *arreglo){
 }
 
 int *algoritmoRoundRobin(int *arreglo){
+
     if(procesoActual==NULL){
         procesoActual = (enlace) listaProcesos;
     }else {
+        printf("Proceso Actual: %d\n", procesoActual->pid);
         enlace listaProcesosIterar=listaProcesos;
         while (listaProcesosIterar) {
             if (procesoActual->pid == listaProcesosIterar->pid) {
@@ -182,6 +184,7 @@ int * seleccionAlgoritmo(){
 }
 
 void CpuScheduler(){
+    segundoActual++;
     int *proceso_seleccionado;
     while(TRUE) {
         if (listaProcesos == NULL && procesosTerminados == TRUE) {
@@ -201,11 +204,11 @@ void CpuScheduler(){
 
             if(opcionAlgoritmo==6){
                 if(ultimoProcesoImpreso!=-1) {
-                    printf("[%i] Proceso %i ejecutado por: %i segundos\n",segundoActual,ultimoProcesoImpreso,cantidadDeEjecuciones);
+                    printf("[%i] Proceso %i ejecutado por: %i segundos [quedan %d segundos]\n",segundoActual,ultimoProcesoImpreso,cantidadDeEjecuciones, procesoActual->burst);
                 }
                 ultimoProcesoImpreso = proceso_seleccionado[0];
                 cantidadDeEjecuciones = proceso_seleccionado[1];
-                printf("\n[%i] Proceso %d ejecutándose...\n", segundoActual, proceso_seleccionado[0]);
+                printf("\n[%i] Proceso %d de burst %d [%d] y prioridad %d ejecutándose...\n",segundoActual-((!procesoActual->pid && segundoActual==1)?1:0), proceso_seleccionado[0], procesoActual->burst+proceso_seleccionado[1], procesoActual->burstOriginal, procesoActual->prioridad);
             }else {
                 if (ultimoProcesoImpreso == -1) {
                     ultimoProcesoImpreso = proceso_seleccionado[0];
@@ -214,33 +217,38 @@ void CpuScheduler(){
                 } else if (ultimoProcesoImpreso == proceso_seleccionado[0]) {
                     cantidadDeEjecuciones += proceso_seleccionado[1];
                 } else {
-                    printf("[%i] Proceso %i ejecutado por: %i segundos\n", segundoActual , ultimoProcesoImpreso, cantidadDeEjecuciones);
+                    printf("[%i] Proceso %i ejecutado por: %i segundos [quedan %d segundos]\n",segundoActual,ultimoProcesoImpreso,cantidadDeEjecuciones, procesoActual->burst);
                     ultimoProcesoImpreso = proceso_seleccionado[0];
                     cantidadDeEjecuciones = proceso_seleccionado[1];
                     procesoIniciado = FALSE;
                 }
                 if (procesoIniciado == FALSE) {
-                    printf("\n[%i] Proceso %d ejecutándose...\n",segundoActual, proceso_seleccionado[0]);
+                    printf("\n[%i] Proceso %d de burst %d [%d] y prioridad %d ejecutándose...\n",segundoActual-((!procesoActual->pid && segundoActual==1)?1:0), proceso_seleccionado[0], procesoActual->burst+proceso_seleccionado[1], procesoActual->burstOriginal, procesoActual->prioridad);
                     procesoIniciado = TRUE;
                 }
             }
             borrarTemporal();
             sleep(proceso_seleccionado[1]);
             if (procesoActual->burst == 0) {
-                printf("[%i] Proceso %d ejecutado por: %d segundos\n", segundoActual ,  ultimoProcesoImpreso, cantidadDeEjecuciones);
+                printf("[%i] Proceso %i ejecutado por: %i segundos [quedan %d segundos]\n",segundoActual,ultimoProcesoImpreso,cantidadDeEjecuciones, procesoActual->burst);
                 ultimoProcesoImpreso=-1;
                 cantidadDeEjecuciones=-1;
-                procesoActual->tiempoFinalizacion=segundoActual + ((!procesoActual->pid) ? 1: 0);
+                procesoActual->tiempoFinalizacion=segundoActual; //+ ((!procesoActual->pid) ? 1: 0);
                 if (listaProcesosTerminados == NULL) {
                     listaProcesosTerminados = procesoActual;
                 } else {
-                    enlace listaProcesosIterar = listaProcesosTerminados;
-                    while (listaProcesosIterar->siguiente) {
-                        listaProcesosIterar = listaProcesosIterar->siguiente;
+                    if(listaProcesosTerminados->pid>procesoActual->pid){
+                        procesoActual->siguiente=listaProcesosTerminados;
+                        listaProcesosTerminados=procesoActual;
+                    }else {
+                        enlace listaProcesosIterar = listaProcesosTerminados;
+                        while (listaProcesosIterar->siguiente && listaProcesosIterar->siguiente->pid < procesoActual->pid) {
+                            listaProcesosIterar = listaProcesosIterar->siguiente;
+                        }
+                        procesoActual->siguiente = listaProcesosIterar->siguiente;
+                        listaProcesosIterar->siguiente = procesoActual;
                     }
-                    listaProcesosIterar->siguiente = procesoActual;
                 }
-
                 procesoActual=procesoAnterior;
             } else {
                 if(procesoAnterior==NULL){
@@ -459,8 +467,8 @@ void JobScheduler(){
                     //Somebody disconnected , get his details and print
                     getpeername(sd , (struct sockaddr*)&address , \
                         (socklen_t*)&addrlen);
-                    printf("Cliente con ip %s y puerto %d se ha desconectado \n" ,
-                           inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+                    //printf("Cliente con ip %s y puerto %d se ha desconectado \n" ,
+                    //       inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
 
                     //Close the socket and mark as 0 in list for reuse
                     close( sd );
@@ -517,7 +525,7 @@ void detenerSimulacion() {
     printf("\nSe ha detenido la simulacion del planificador de CPU\nA continuacion se muestra la siguiente informacion resumen de la simulacion\n\n");
     int cantidadProcesos = 0, acumuladoTAT = 0, acumuladoWT = 0;
     for (enlace listaProcesosIterar = listaProcesosTerminados; listaProcesosIterar; listaProcesosIterar = listaProcesosIterar->siguiente) cantidadProcesos++;
-    printf("Cantidad de procesos ejecutados: %i\n", cantidadProcesos); // OJO?????
+    printf("Cantidad de procesos ejecutados: %i\n", cantidadProcesos);
     printf("Cantidad de segundos con CPU ocioso: %i\n", cantidadSegundosCpuOcioso);
     printf("\nTabla resumen de procesos\n\n");
     printf("%-25s %-25s %-25s\n", "PID (Identificador)", "TAT (Turn Around Time)", "WT (Waiting Time)");

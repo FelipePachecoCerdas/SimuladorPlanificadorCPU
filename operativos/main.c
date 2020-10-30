@@ -62,7 +62,7 @@ void avisarFinProcesos() {
 }
 
 void hacerProcesoManual(char *linea){
-    printf("\n---Mensaje del pthread con id %lu---\nSoy el hilo con la informacion para enviar de \"%s\"\nEste hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(), 2);
+    printf("\n---Mensaje del pthread con id %lu---\nSoy el hilo con la informacion para enviar de %sEste hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(),linea, 2);
     sleep (2) ; //Espera 2 segundos para enviar la informacion
     crearClienteSocket(linea);
 }
@@ -72,7 +72,7 @@ void ClienteManual (){
     char * linea = NULL;
     size_t len = 0, read;
 
-    FILE* fp = fopen("/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/operativos/entrada.txt", "r");
+    FILE* fp = fopen("/home/jdtm23/Documents/SimuladorPlanificadorCPU/operativos/entrada.txt", "r");
     if (fp == NULL)
         exit(1); // No existe el archivo
 
@@ -81,10 +81,12 @@ void ClienteManual (){
 
         pthread_t hiloProcesoNuevo;
         pthread_create(&hiloProcesoNuevo, NULL , hacerProcesoManual, (void *) linea);
-        pthread_join(hiloProcesoNuevo, NULL);
+        //pthread_join(hiloProcesoNuevo, NULL);
 
         int upper = 8, lower = 3;
         int num = (rand() % (upper - lower + 1)) + lower;
+
+        printf("\n---Mensaje del pthread con id %lu---\nEl hilo se va a dormir %i segundos antes del siguiente proceso\n", pthread_self(), num);
         sleep (num) ;
     }
     fclose(fp);
@@ -101,7 +103,7 @@ void crearProcesoAutomatico(p_paramsAuto parametros){
     snprintf(str, 1024, "%i %i", burst, prioridad);
    // printf("%s", str);
 
-    printf("\n---Mensaje del pthread con id %lu---\nEl hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(), 2);
+    printf("\n---Mensaje del pthread con id %lu---\nSoy el hilo con la informacion para enviar de %sEste hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(),str, 2);
     sleep (2) ; //Espera 2 segundos para enviar la informacion
     crearClienteSocket(str);
 }
@@ -151,6 +153,8 @@ void ClienteAutomatico(){
         //pthread_join(hiloProcesoNuevo, NULL);
 
         int tiempoDormir = (rand() % (parametros->tasaMax - parametros->tasaMin + 1)) + parametros->tasaMin;
+
+        printf("\n---Mensaje del pthread con id %lu---\nEl hilo se va a dormir %i segundos antes del siguiente proceso\n", pthread_self(), tiempoDormir);
         sleep(tiempoDormir);
     }
     printf("\nLa creacion de procesos de forma automatica se ha detenido\n");
