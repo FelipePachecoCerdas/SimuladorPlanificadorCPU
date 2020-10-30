@@ -16,6 +16,7 @@ struct paramsAuto {
     int tasaMin;
 };
 
+
 typedef struct paramsAuto* p_paramsAuto;
 
 int masProcesos = 1;
@@ -61,7 +62,7 @@ void ClienteManual (){
     char * linea = NULL;
     size_t len = 0, read;
 
-    FILE* fp = fopen("/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/operativos/entrada.txt", "r");
+    FILE* fp = fopen("/home/jdtm23/Documents/SimuladorPlanificadorCPU/operativos/entrada.txt", "r");
     if (fp == NULL)
         exit(1); // No existe el archivo
 

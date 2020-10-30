@@ -3,7 +3,7 @@
 #include  <string.h>
 #include  <unistd.h>
 #include  <pthread.h>
-
+#include "malloc.h"
 #include <stdio.h>
 #include <string.h>   //strlen
 #include <stdlib.h>
@@ -30,14 +30,224 @@ struct proceso_PCB {
     enlace siguiente;
 };
 
-int pidActual = 0, segundoActual = 0;
+int pidActual = 0, segundoActual = 0,quantum;
+
+int procesoIniciado=FALSE;
 
 enlace listaProcesos = NULL;
 
 pthread_t hiloJobScheduler, hiloCpuScheduler, hiloTimer;
 
-void CpuScheduler() {
-    // algo
+enlace listaProcesosTerminados = NULL;
+
+int opcionAlgoritmo;
+
+int procesosTerminados=FALSE;
+int ultimoProcesoImpreso=-1, cantidadDeEjecuciones=-1;
+
+enlace procesoActual=NULL;
+enlace procesoSiguiente=NULL;
+enlace procesoAnterior=NULL;
+
+int borrarTemporal(){
+    enlace listaProcesosIterar=listaProcesos;
+    if(listaProcesos->pid==procesoActual->pid){
+        procesoSiguiente=listaProcesos->siguiente;
+        procesoAnterior=NULL;
+        listaProcesos=listaProcesos->siguiente;
+    }else{
+        while (listaProcesosIterar){
+            if(procesoActual->pid==listaProcesosIterar->siguiente->pid) {
+                procesoAnterior=listaProcesosIterar;
+                procesoSiguiente=listaProcesosIterar->siguiente->siguiente;
+                listaProcesosIterar->siguiente = listaProcesosIterar->siguiente->siguiente;
+                break;
+            }
+            listaProcesosIterar=listaProcesosIterar->siguiente;
+        }
+    }
+
+    procesoActual->siguiente=NULL;
+}
+
+int *algoritmoFifo(int *arreglo){
+    procesoActual = (enlace) listaProcesos;
+    arreglo[0] = procesoActual->pid;
+    arreglo[1] = procesoActual->burst;
+    procesoActual->burst=0;
+    return arreglo;
+}
+
+int *algoritmoSJF(int *arreglo){
+    procesoActual=listaProcesos;
+    enlace listaProcesosIterar=listaProcesos->siguiente;
+    while (listaProcesosIterar){
+        if(procesoActual->burst>listaProcesosIterar->burst) {
+            procesoActual = listaProcesosIterar;
+        }
+        listaProcesosIterar=listaProcesosIterar->siguiente;
+    }
+    arreglo[0] = procesoActual->pid;
+    if(opcionAlgoritmo==3){
+        arreglo[1] = 1;
+        procesoActual->burst-=1;
+    }else {
+        arreglo[1] = procesoActual->burst;
+        procesoActual->burst = 0;
+    }
+    return arreglo;
+}
+
+int *algoritmoHPF(int *arreglo){
+    procesoActual=listaProcesos;
+    enlace listaProcesosIterar=listaProcesos->siguiente;
+    while (listaProcesosIterar){
+        if(procesoActual->prioridad>listaProcesosIterar->prioridad) {
+            procesoActual = listaProcesosIterar;
+        }
+        listaProcesosIterar=listaProcesosIterar->siguiente;
+    }
+
+    arreglo[0] = procesoActual->pid;
+    if(opcionAlgoritmo==5){
+        arreglo[1] = 1;
+        procesoActual->burst-=1;
+    }else {
+        arreglo[1] = procesoActual->burst;
+        procesoActual->burst = 0;
+    }
+    return arreglo;
+}
+
+int *algoritmoRoundRobin(int *arreglo){
+    if(procesoActual==NULL){
+        procesoActual = (enlace) listaProcesos;
+    }else {
+        enlace listaProcesosIterar=listaProcesos;
+        while (listaProcesosIterar) {
+            if (procesoActual->pid == listaProcesosIterar->pid) {
+                procesoActual = listaProcesosIterar->siguiente;
+                break;
+            }
+            listaProcesosIterar = listaProcesosIterar->siguiente;
+        }
+        if(procesoActual==NULL){
+            procesoActual = (enlace) listaProcesos;
+        }
+    }
+    if(procesoActual->burst<=quantum){
+        arreglo[1] = procesoActual->burst;
+        procesoActual->burst=0;
+    }else{
+        arreglo[1] = quantum;
+        procesoActual->burst-=quantum;
+    }
+    arreglo[0] = procesoActual->pid;
+    return arreglo;
+}
+int * seleccionAlgoritmo(){
+    int *infoProceso;
+    int arreglo[2];
+    switch (opcionAlgoritmo){
+        case 1://Algoritmo FIFO
+            infoProceso = algoritmoFifo(arreglo);
+            break;
+
+        case 2://Algoritmo SJF
+            infoProceso = algoritmoSJF(arreglo);
+            break;
+
+        case 3://Algoritmo SJF Apropiativo
+            infoProceso = algoritmoSJF(arreglo);
+            break;
+
+        case 4://Algoritmo HPF
+            infoProceso = algoritmoHPF(arreglo);
+            break;
+
+        case 5: //Algoritmo HPF Apropiativo
+            infoProceso = algoritmoHPF(arreglo);
+            break;
+
+        case 6: //Algoritmo Round Robin
+            infoProceso=algoritmoRoundRobin(arreglo);
+            break;
+
+    }
+    return infoProceso;
+}
+
+void CpuScheduler(){
+    int *proceso_seleccionado;
+    while(TRUE){
+        if(listaProcesos==NULL && procesosTerminados==TRUE){
+            break;
+        }else if(listaProcesos!=NULL) {
+            proceso_seleccionado = seleccionAlgoritmo();
+            if(opcionAlgoritmo==6){
+                if(ultimoProcesoImpreso!=-1) {
+                    printf("Proceso %d ejecutado por: %d segundos\n",ultimoProcesoImpreso,cantidadDeEjecuciones);
+                }
+                ultimoProcesoImpreso = proceso_seleccionado[0];
+                cantidadDeEjecuciones = proceso_seleccionado[1];
+                printf("Proceso %d ejecutándose\n", proceso_seleccionado[0]);
+            }else {
+                if (ultimoProcesoImpreso == -1) {
+                    ultimoProcesoImpreso = proceso_seleccionado[0];
+                    cantidadDeEjecuciones = proceso_seleccionado[1];
+                    procesoIniciado = FALSE;
+                } else if (ultimoProcesoImpreso == proceso_seleccionado[0]) {
+                    cantidadDeEjecuciones += proceso_seleccionado[1];
+                } else {
+                    printf("Proceso %d ejecutado por: %d segundos\n", ultimoProcesoImpreso, cantidadDeEjecuciones);
+                    ultimoProcesoImpreso = proceso_seleccionado[0];
+                    cantidadDeEjecuciones = proceso_seleccionado[1];
+                    procesoIniciado = FALSE;
+                }
+                if (procesoIniciado == FALSE) {
+                    printf("Proceso %d ejecutándose\n", proceso_seleccionado[0]);
+                    procesoIniciado = TRUE;
+                }
+            }
+            borrarTemporal();
+            sleep(proceso_seleccionado[1]);
+            if (procesoActual->burst == 0) {
+                printf("Proceso %d ejecutado por: %d segundos\n",ultimoProcesoImpreso,cantidadDeEjecuciones);
+                ultimoProcesoImpreso=-1;
+                cantidadDeEjecuciones=-1;
+                procesoActual->tiempoFinalizacion=segundoActual;
+                if (listaProcesosTerminados == NULL) {
+                    listaProcesosTerminados = procesoActual;
+                } else {
+                    enlace listaProcesosIterar = listaProcesosTerminados;
+                    while (listaProcesosIterar->siguiente) {
+                        listaProcesosIterar = listaProcesosIterar->siguiente;
+                    }
+                    listaProcesosIterar->siguiente = procesoActual;
+                }
+
+                procesoActual=procesoAnterior;
+            } else {
+                if(procesoAnterior==NULL){
+
+                    enlace lista=listaProcesos;
+                    listaProcesos=procesoActual;
+                    listaProcesos->siguiente=lista;
+                }else{
+                    enlace listaProcesosIterar = listaProcesos;
+                    while (listaProcesosIterar) {
+                        if(listaProcesosIterar==procesoAnterior){
+                            procesoSiguiente=listaProcesosIterar->siguiente;
+                            listaProcesosIterar->siguiente=procesoActual;
+                            listaProcesosIterar->siguiente->siguiente=procesoSiguiente;
+                            break;
+                        }
+                        listaProcesosIterar = listaProcesosIterar->siguiente;
+                    }
+                }
+            }
+        }
+    }
 }
 
 void Timer() {
@@ -278,7 +488,7 @@ void detenerSimulacion() {
     printf("Cantidad de segundos con CPU ocioso: %i\n", 42);
     printf("\nTabla resumen de procesos\n\n");
     printf("%-25s %-25s %-25s\n", "PID (Identificador)", "TAT (Turn Around Time)", "WT (Waiting Time)");
-    for (enlace listaProcesosIterar = listaProcesos; listaProcesosIterar; listaProcesosIterar = listaProcesosIterar->siguiente) {
+    for (enlace listaProcesosIterar = listaProcesosTerminados; listaProcesosIterar; listaProcesosIterar = listaProcesosIterar->siguiente) {
         int tat = listaProcesosIterar->tiempoFinalizacion - listaProcesosIterar->tiempoLlegada;
         int wt = tat - listaProcesosIterar->burstOriginal;
         acumuladoTAT += tat;
@@ -303,7 +513,6 @@ int main() {
     printf("5. HPF Apropiativo (High Priority First)\n");
     printf("6. Round Robin\n");
 
-    int opcionAlgoritmo;
     for(;;) {
         printf("Digite la opcion: ");
         scanf("%i", &opcionAlgoritmo);
@@ -314,7 +523,6 @@ int main() {
         }
 
         if (opcionAlgoritmo == 6) {
-            int quantum;
             printf("Indique el quantum deseado para el algoritmo Round Robin: ");
             scanf("%i", &quantum);
         }

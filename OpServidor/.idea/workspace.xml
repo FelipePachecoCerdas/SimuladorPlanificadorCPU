@@ -53,6 +53,12 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../operativos" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RunManager">
@@ -81,6 +87,7 @@
       <option name="presentableId" value="Default" />
       <updated>1603928189860</updated>
       <workItem from="1603928191557" duration="24826000" />
+      <workItem from="1603992802267" duration="29635000" />
     </task>
     <servers />
   </component>
@@ -97,28 +104,57 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="566" y="202" key="#xdebugger.evaluate" timestamp="1603992165266">
+      <screen x="72" y="27" width="1646" height="861" />
+    </state>
+    <state x="566" y="202" key="#xdebugger.evaluate/72.27.1646.861@72.27.1646.861" timestamp="1603992165266" />
+    <state width="578" height="506" key="DebuggerActiveHint" timestamp="1603989757310">
+      <screen x="72" y="27" width="1646" height="861" />
+    </state>
+    <state width="578" height="506" key="DebuggerActiveHint/72.27.1646.861@72.27.1646.861" timestamp="1603989757310" />
     <state x="496" y="123" width="424" height="484" key="FileChooserDialogImpl" timestamp="1603928203473">
       <screen x="67" y="27" width="1293" height="676" />
     </state>
     <state x="496" y="123" width="424" height="484" key="FileChooserDialogImpl/67.27.1293.676@67.27.1293.676" timestamp="1603928203473" />
-    <state width="1247" height="177" key="GridCell.Tab.0.bottom" timestamp="1603961711968">
-      <screen x="67" y="27" width="1293" height="676" />
+    <state width="777" height="224" key="GridCell.Tab.0.bottom" timestamp="1604028339453">
+      <screen x="72" y="27" width="1646" height="861" />
     </state>
     <state width="1247" height="177" key="GridCell.Tab.0.bottom/67.27.1293.676@67.27.1293.676" timestamp="1603961711968" />
-    <state width="1247" height="177" key="GridCell.Tab.0.center" timestamp="1603961711964">
-      <screen x="67" y="27" width="1293" height="676" />
+    <state width="777" height="224" key="GridCell.Tab.0.bottom/72.27.1646.861@72.27.1646.861" timestamp="1604028339453" />
+    <state width="777" height="224" key="GridCell.Tab.0.center" timestamp="1604028339452">
+      <screen x="72" y="27" width="1646" height="861" />
     </state>
     <state width="1247" height="177" key="GridCell.Tab.0.center/67.27.1293.676@67.27.1293.676" timestamp="1603961711964" />
-    <state width="1247" height="177" key="GridCell.Tab.0.left" timestamp="1603961711963">
-      <screen x="67" y="27" width="1293" height="676" />
+    <state width="777" height="224" key="GridCell.Tab.0.center/72.27.1646.861@72.27.1646.861" timestamp="1604028339452" />
+    <state width="777" height="224" key="GridCell.Tab.0.left" timestamp="1604028339450">
+      <screen x="72" y="27" width="1646" height="861" />
     </state>
     <state width="1247" height="177" key="GridCell.Tab.0.left/67.27.1293.676@67.27.1293.676" timestamp="1603961711963" />
-    <state width="1247" height="177" key="GridCell.Tab.0.right" timestamp="1603961711967">
-      <screen x="67" y="27" width="1293" height="676" />
+    <state width="777" height="224" key="GridCell.Tab.0.left/72.27.1646.861@72.27.1646.861" timestamp="1604028339450" />
+    <state width="777" height="224" key="GridCell.Tab.0.right" timestamp="1604028339453">
+      <screen x="72" y="27" width="1646" height="861" />
     </state>
     <state width="1247" height="177" key="GridCell.Tab.0.right/67.27.1293.676@67.27.1293.676" timestamp="1603961711967" />
+    <state width="777" height="224" key="GridCell.Tab.0.right/72.27.1646.861@72.27.1646.861" timestamp="1604028339453" />
+    <state width="777" height="263" key="GridCell.Tab.1.bottom" timestamp="1604017052805">
+      <screen x="72" y="27" width="1646" height="861" />
+    </state>
+    <state width="777" height="263" key="GridCell.Tab.1.bottom/72.27.1646.861@72.27.1646.861" timestamp="1604017052805" />
+    <state width="777" height="263" key="GridCell.Tab.1.center" timestamp="1604017052805">
+      <screen x="72" y="27" width="1646" height="861" />
+    </state>
+    <state width="777" height="263" key="GridCell.Tab.1.center/72.27.1646.861@72.27.1646.861" timestamp="1604017052805" />
+    <state width="777" height="263" key="GridCell.Tab.1.left" timestamp="1604017052800">
+      <screen x="72" y="27" width="1646" height="861" />
+    </state>
+    <state width="777" height="263" key="GridCell.Tab.1.left/72.27.1646.861@72.27.1646.861" timestamp="1604017052800" />
+    <state width="777" height="263" key="GridCell.Tab.1.right" timestamp="1604017052805">
+      <screen x="72" y="27" width="1646" height="861" />
+    </state>
+    <state width="777" height="263" key="GridCell.Tab.1.right/72.27.1646.861@72.27.1646.861" timestamp="1604017052805" />
     <state x="202" y="27" width="1012" height="676" key="SettingsEditor" timestamp="1603942186562">
       <screen x="67" y="27" width="1293" height="676" />
     </state>
