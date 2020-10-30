@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/jdtm23/Documents/SimuladorPlanificadorCPU/OpServidor/main.c
+/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/OpServidor/main.c
 stdio.h
 -
 stdlib.h
@@ -18,7 +18,7 @@ unistd.h
 pthread.h
 -
 malloc.h
-/home/jdtm23/Documents/SimuladorPlanificadorCPU/OpServidor/malloc.h
+/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/OpServidor/malloc.h
 stdio.h
 -
 string.h

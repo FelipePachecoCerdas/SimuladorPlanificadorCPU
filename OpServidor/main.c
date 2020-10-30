@@ -42,12 +42,16 @@ enlace listaProcesosTerminados = NULL;
 
 int opcionAlgoritmo;
 
-int procesosTerminados=FALSE;
-int ultimoProcesoImpreso=-1, cantidadDeEjecuciones=-1;
+int procesosTerminados = FALSE;
+int ultimoProcesoImpreso = -1, cantidadDeEjecuciones = -1, cantidadSegundosCpuOcioso;
 
 enlace procesoActual=NULL;
 enlace procesoSiguiente=NULL;
 enlace procesoAnterior=NULL;
+
+int comenzado = FALSE;
+
+void detenerSimulacion();
 
 int borrarTemporal(){
     enlace listaProcesosIterar=listaProcesos;
@@ -148,7 +152,7 @@ int *algoritmoRoundRobin(int *arreglo){
 int * seleccionAlgoritmo(){
     int *infoProceso;
     int arreglo[2];
-    switch (opcionAlgoritmo){
+    switch (opcionAlgoritmo) {
         case 1://Algoritmo FIFO
             infoProceso = algoritmoFifo(arreglo);
             break;
@@ -179,18 +183,29 @@ int * seleccionAlgoritmo(){
 
 void CpuScheduler(){
     int *proceso_seleccionado;
-    while(TRUE){
-        if(listaProcesos==NULL && procesosTerminados==TRUE){
-            break;
-        }else if(listaProcesos!=NULL) {
+    while(TRUE) {
+        if (listaProcesos == NULL && procesosTerminados == TRUE) {
+            detenerSimulacion();
+        } else if (listaProcesos == NULL) {
+            cantidadSegundosCpuOcioso++;
+            printf("TOY OCIOSOOOOOOOOOOOOOO");
+            sleep(1);
+            enlace l = listaProcesosTerminados;
+            while (l && l->siguiente) l = l->siguiente;
+            if (listaProcesos && listaProcesos->tiempoLlegada == l->tiempoFinalizacion) cantidadSegundosCpuOcioso--;
+            /*enlace l = listaProcesosTerminados;
+            while (l->siguiente) l = l->siguiente;
+            if (alguienNuevo && l->tiempoFinalizacion == l->siguiente->tiempoLlegada) cantidadSegundosCpuOcioso--;*/
+        } else {
             proceso_seleccionado = seleccionAlgoritmo();
+
             if(opcionAlgoritmo==6){
                 if(ultimoProcesoImpreso!=-1) {
-                    printf("Proceso %d ejecutado por: %d segundos\n",ultimoProcesoImpreso,cantidadDeEjecuciones);
+                    printf("[%i] Proceso %i ejecutado por: %i segundos\n",segundoActual,ultimoProcesoImpreso,cantidadDeEjecuciones);
                 }
                 ultimoProcesoImpreso = proceso_seleccionado[0];
                 cantidadDeEjecuciones = proceso_seleccionado[1];
-                printf("Proceso %d ejecutándose\n", proceso_seleccionado[0]);
+                printf("\n[%i] Proceso %d ejecutándose...\n", segundoActual, proceso_seleccionado[0]);
             }else {
                 if (ultimoProcesoImpreso == -1) {
                     ultimoProcesoImpreso = proceso_seleccionado[0];
@@ -199,23 +214,23 @@ void CpuScheduler(){
                 } else if (ultimoProcesoImpreso == proceso_seleccionado[0]) {
                     cantidadDeEjecuciones += proceso_seleccionado[1];
                 } else {
-                    printf("Proceso %d ejecutado por: %d segundos\n", ultimoProcesoImpreso, cantidadDeEjecuciones);
+                    printf("[%i] Proceso %i ejecutado por: %i segundos\n", segundoActual , ultimoProcesoImpreso, cantidadDeEjecuciones);
                     ultimoProcesoImpreso = proceso_seleccionado[0];
                     cantidadDeEjecuciones = proceso_seleccionado[1];
                     procesoIniciado = FALSE;
                 }
                 if (procesoIniciado == FALSE) {
-                    printf("Proceso %d ejecutándose\n", proceso_seleccionado[0]);
+                    printf("\n[%i] Proceso %d ejecutándose...\n",segundoActual, proceso_seleccionado[0]);
                     procesoIniciado = TRUE;
                 }
             }
             borrarTemporal();
             sleep(proceso_seleccionado[1]);
             if (procesoActual->burst == 0) {
-                printf("Proceso %d ejecutado por: %d segundos\n",ultimoProcesoImpreso,cantidadDeEjecuciones);
+                printf("[%i] Proceso %d ejecutado por: %d segundos\n", segundoActual ,  ultimoProcesoImpreso, cantidadDeEjecuciones);
                 ultimoProcesoImpreso=-1;
                 cantidadDeEjecuciones=-1;
-                procesoActual->tiempoFinalizacion=segundoActual;
+                procesoActual->tiempoFinalizacion=segundoActual + ((!procesoActual->pid) ? 1: 0);
                 if (listaProcesosTerminados == NULL) {
                     listaProcesosTerminados = procesoActual;
                 } else {
@@ -252,8 +267,8 @@ void CpuScheduler(){
 
 void Timer() {
     for (;;) {
-        segundoActual++;
         sleep(1);
+        segundoActual++;
     }
 }
 
@@ -347,8 +362,7 @@ void JobScheduler(){
     addrlen = sizeof(address);
     puts("Esperando conexiones cliente ...");
 
-    while(TRUE)
-    {
+    while(TRUE) {
         //clear the socket set
         FD_ZERO(&readfds);
 
@@ -392,33 +406,41 @@ void JobScheduler(){
             }
 
             //inform user of socket number - used in send and receive commands
-            printf("\nNueva conexion de cliente con socket fd de %d, ip %s y puerto %d\n"
-                   , new_socket , inet_ntoa(address.sin_addr) , ntohs
+            printf("\n[%i] Nueva conexion de cliente con socket fd de %d, ip %s y puerto %d\n"
+                   , segundoActual, new_socket , inet_ntoa(address.sin_addr) , ntohs
                     (address.sin_port));
 
             valread = read( new_socket , buffer, 1024);
-            //printf("K %s K\n",buffer );
-            int pidNuevoProceso = insertarProceso(buffer);
-            printf("Nuevo proceso creado del cliente con PID %i\n", pidNuevoProceso);
 
-            //puts("Welcome message sent successfully");
-            sprintf(message, "Se ha creado el proceso con PID %i para incluirlo en la simulacion\n", pidNuevoProceso);
-            //send new connection message
-            if( send(new_socket, message, strlen(message), 0) != strlen(message) )
-            {
-                perror("send");
-            }
+            if (!strcmp (buffer,"FIN")) {
+                procesosTerminados = TRUE;
+            } else {
+                int pidNuevoProceso = insertarProceso(buffer);
+                printf("[%i] Nuevo proceso creado del cliente con PID %i\n", segundoActual, pidNuevoProceso);
 
-            //add new socket to array of sockets
-            for (i = 0; i < max_clients; i++)
-            {
-                //if position is empty
-                if( client_socket[i] == 0 )
-                {
-                    client_socket[i] = new_socket;
-                    //printf("Adding to list of sockets as %d\n" , i);
+                if (!comenzado) {
+                    pthread_create(&hiloTimer, NULL, Timer, NULL);
+                    pthread_create(&hiloCpuScheduler, NULL, CpuScheduler, NULL);
+                    comenzado = TRUE;
+                }
 
-                    break;
+                //puts("Welcome message sent successfully");
+                sprintf(message, "Se ha creado el proceso con PID %i para incluirlo en la simulacion\n",
+                        pidNuevoProceso);
+                //send new connection message
+                if (send(new_socket, message, strlen(message), 0) != strlen(message)) {
+                    perror("send");
+                }
+
+                //add new socket to array of sockets
+                for (i = 0; i < max_clients; i++) {
+                    //if position is empty
+                    if (client_socket[i] == 0) {
+                        client_socket[i] = new_socket;
+                        //printf("Adding to list of sockets as %d\n" , i);
+
+                        break;
+                    }
                 }
             }
         }
@@ -437,7 +459,7 @@ void JobScheduler(){
                     //Somebody disconnected , get his details and print
                     getpeername(sd , (struct sockaddr*)&address , \
                         (socklen_t*)&addrlen);
-                    printf("\nCliente con ip %s y puerto %d se ha desconectado \n" ,
+                    printf("Cliente con ip %s y puerto %d se ha desconectado \n" ,
                            inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
 
                     //Close the socket and mark as 0 in list for reuse
@@ -459,14 +481,15 @@ void JobScheduler(){
 
 }
 
-void desplegarColaProcesos() {
-    if (listaProcesos == NULL) {
+void desplegarColaProcesos(enlace listaProcesosImprimir) {
+    if (listaProcesosImprimir == NULL) {
         printf("Actualmente la cola de procesos se encuentra vacia\n");
         return;
     }
 
-    enlace listaProcesosIterar = listaProcesos;
+    enlace listaProcesosIterar = listaProcesosImprimir;
 
+    printf((listaProcesosImprimir == listaProcesos) ? "\nCola de Procesos:\n": "\nCola de Procesos Terminados:\n");
     printf("%-20s %-20s %-20s %-20s %-20s %-20s\n", "PID (Identificador)", "Burst Actual", "Burst Original", "Prioridad", "Tiempo Llegada", "Tiempo Finalizacion");
     while (listaProcesosIterar) {
         printf("%-20i %-20i %-20i %-20i %-20i %-20i \n", listaProcesosIterar->pid,  listaProcesosIterar->burst,
@@ -474,18 +497,28 @@ void desplegarColaProcesos() {
                listaProcesosIterar->tiempoLlegada, listaProcesosIterar->tiempoFinalizacion);
         listaProcesosIterar = listaProcesosIterar->siguiente;
     }
+
+    if (listaProcesosImprimir == listaProcesos && procesoActual) {
+        printf("\nProceso Actual del CPU:\n");
+        printf("%-20s %-20s %-20s %-20s %-20s %-20s\n", "PID (Identificador)", "Burst Actual", "Burst Original",
+               "Prioridad", "Tiempo Llegada", "Tiempo Finalizacion");
+        printf("%-20i %-20i %-20i %-20i %-20i %-20i \n", procesoActual->pid, procesoActual->burst,
+               procesoActual->burstOriginal, procesoActual->prioridad,
+               procesoActual->tiempoLlegada, procesoActual->tiempoFinalizacion);
+
+    }
 }
 
 void detenerSimulacion() {
     // Se van a matar los hilos por seguridad
     pthread_cancel(hiloJobScheduler);
-    pthread_cancel(hiloCpuScheduler);
     pthread_cancel(hiloTimer);
 
     printf("\nSe ha detenido la simulacion del planificador de CPU\nA continuacion se muestra la siguiente informacion resumen de la simulacion\n\n");
-    int cantidadProcesos = pidActual + 1, acumuladoTAT = 0, acumuladoWT = 0;
+    int cantidadProcesos = 0, acumuladoTAT = 0, acumuladoWT = 0;
+    for (enlace listaProcesosIterar = listaProcesosTerminados; listaProcesosIterar; listaProcesosIterar = listaProcesosIterar->siguiente) cantidadProcesos++;
     printf("Cantidad de procesos ejecutados: %i\n", cantidadProcesos); // OJO?????
-    printf("Cantidad de segundos con CPU ocioso: %i\n", 42);
+    printf("Cantidad de segundos con CPU ocioso: %i\n", cantidadSegundosCpuOcioso);
     printf("\nTabla resumen de procesos\n\n");
     printf("%-25s %-25s %-25s\n", "PID (Identificador)", "TAT (Turn Around Time)", "WT (Waiting Time)");
     for (enlace listaProcesosIterar = listaProcesosTerminados; listaProcesosIterar; listaProcesosIterar = listaProcesosIterar->siguiente) {
@@ -499,6 +532,8 @@ void detenerSimulacion() {
     printf("\nPromedio de Waiting Time: %f\n", promedioWT);
     double promedioTAT = (acumuladoTAT * 1.0) / cantidadProcesos;
     printf("\nPromedio de Turn Around Time: %f\n", promedioTAT);
+
+    pthread_cancel(hiloCpuScheduler);
 }
 
 int main() {
@@ -526,29 +561,28 @@ int main() {
             printf("Indique el quantum deseado para el algoritmo Round Robin: ");
             scanf("%i", &quantum);
         }
-        // ALGO AQUI (?
         break;
 
     }
 
-    pthread_create(&hiloTimer, NULL , Timer , NULL);
     pthread_create(&hiloJobScheduler, NULL , JobScheduler , NULL);
-    pthread_create(&hiloCpuScheduler, NULL , CpuScheduler , NULL);
 
     int opcionSimulador = 0;
     printf("\n ***Menu del Simulador del Planificador de CPU ***\n");
     printf("Digite alguno de las siguientes opciones en cualquier momento mediante su correspondiente digito para ejecutar la accion\n");
     printf("1. Consultar cola de procesos\n");
     printf("2. Detener simulacion\n");
+    printf("3. Consultar lista de procesos terminados\n");
     for(;;) {
         scanf("%i", &opcionSimulador);
-        if (opcionSimulador != 1 && opcionSimulador != 2) {
+        if (opcionSimulador != 1 && opcionSimulador != 2 && opcionSimulador != 3) {
             printf("Opcion incorrecta. Intentelo de nuevo.\n");
             continue;
         }
 
-        if (opcionSimulador == 1) desplegarColaProcesos();
-        else detenerSimulacion();
+        if (opcionSimulador == 1) desplegarColaProcesos(listaProcesos);
+        else if (opcionSimulador == 2) detenerSimulacion();
+        else desplegarColaProcesos(listaProcesosTerminados);
 
     }
     printf("\n");

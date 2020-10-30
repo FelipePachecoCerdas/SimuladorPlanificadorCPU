@@ -47,12 +47,22 @@ int crearClienteSocket(char *informacionProceso){
     // Envia la informacion
     send(sock , informacionProceso , 1024 , 0 );
 
+    if (!strcmp (informacionProceso,"FIN")) {
+        printf("\n---Mensaje del hilo con id %lu---\nSe ha enviado la siguiente informacion al servidor:\n%s\nSe ha terminado el envio de procesos y este hilo\n", pthread_self(), informacionProceso);
+        return 0;
+    }
+
     // Recibe le mensaje con el PID
     valread = read( sock , buffer, 1024);
-    printf("\nMensaje del pthread con id %lu:\nSe ha enviado la siguiente informacion al servidor => %s\n%sEl hilo ha terminado su ejecucion\n", pthread_self(), informacionProceso, buffer );
+    printf("\n---Mensaje del pthread con id %lu---\nSe ha enviado la siguiente informacion al servidor:\n%s\nEl servidor responde con:\n%s*El hilo ha terminado su ejecucion\n", pthread_self(), informacionProceso, buffer );
+}
+
+void avisarFinProcesos() {
+    crearClienteSocket("FIN");
 }
 
 void hacerProcesoManual(char *linea){
+    printf("\n---Mensaje del pthread con id %lu---\nSoy el hilo con la informacion para enviar de \"%s\"\nEste hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(), 2);
     sleep (2) ; //Espera 2 segundos para enviar la informacion
     crearClienteSocket(linea);
 }
@@ -62,7 +72,7 @@ void ClienteManual (){
     char * linea = NULL;
     size_t len = 0, read;
 
-    FILE* fp = fopen("/home/jdtm23/Documents/SimuladorPlanificadorCPU/operativos/entrada.txt", "r");
+    FILE* fp = fopen("/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/operativos/entrada.txt", "r");
     if (fp == NULL)
         exit(1); // No existe el archivo
 
@@ -71,13 +81,14 @@ void ClienteManual (){
 
         pthread_t hiloProcesoNuevo;
         pthread_create(&hiloProcesoNuevo, NULL , hacerProcesoManual, (void *) linea);
-        //pthread_join(hiloProcesoNuevo, NULL);
+        pthread_join(hiloProcesoNuevo, NULL);
 
         int upper = 8, lower = 3;
         int num = (rand() % (upper - lower + 1)) + lower;
         sleep (num) ;
     }
     fclose(fp);
+    avisarFinProcesos();
 }
 
 void crearProcesoAutomatico(p_paramsAuto parametros){
@@ -90,6 +101,7 @@ void crearProcesoAutomatico(p_paramsAuto parametros){
     snprintf(str, 1024, "%i %i", burst, prioridad);
    // printf("%s", str);
 
+    printf("\n---Mensaje del pthread con id %lu---\nEl hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(), 2);
     sleep (2) ; //Espera 2 segundos para enviar la informacion
     crearClienteSocket(str);
 }
@@ -115,10 +127,10 @@ void detenerAutomatico() {
         scanf("%i", &opcionDetener);
         if (opcionDetener == 1) {
             masProcesos = 0;
+            avisarFinProcesos();
             break;
         } else
             printf("Opcion incorrecta para detener procesos automaticos\n");
-
     }
 }
 

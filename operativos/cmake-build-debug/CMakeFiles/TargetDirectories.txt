@@ -1,3 +1,3 @@
-/home/jdtm23/Documents/SimuladorPlanificadorCPU/operativos/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/jdtm23/Documents/SimuladorPlanificadorCPU/operativos/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/jdtm23/Documents/SimuladorPlanificadorCPU/operativos/cmake-build-debug/CMakeFiles/OpCliente.dir
+/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/operativos/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/operativos/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/felipe/Desktop/Kraken/SimuladorPlanificadorCPU/operativos/cmake-build-debug/CMakeFiles/OpCliente.dir
