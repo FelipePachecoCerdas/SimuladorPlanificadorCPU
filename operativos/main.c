@@ -103,7 +103,7 @@ void crearProcesoAutomatico(p_paramsAuto parametros){
     snprintf(str, 1024, "%i %i", burst, prioridad);
    // printf("%s", str);
 
-    printf("\n---Mensaje del pthread con id %lu---\nSoy el hilo con la informacion para enviar de %sEste hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(),str, 2);
+    printf("\n---Mensaje del pthread con id %lu---\nSoy el hilo con la informacion para enviar de %s\nEste hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(),str, 2);
     sleep (2) ; //Espera 2 segundos para enviar la informacion
     crearClienteSocket(str);
 }

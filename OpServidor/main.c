@@ -128,7 +128,6 @@ int *algoritmoRoundRobin(int *arreglo){
     if(procesoActual==NULL){
         procesoActual = (enlace) listaProcesos;
     }else {
-        printf("Proceso Actual: %d\n", procesoActual->pid);
         enlace listaProcesosIterar=listaProcesos;
         while (listaProcesosIterar) {
             if (procesoActual->pid == listaProcesosIterar->pid) {
@@ -191,7 +190,7 @@ void CpuScheduler(){
             detenerSimulacion();
         } else if (listaProcesos == NULL) {
             cantidadSegundosCpuOcioso++;
-            printf("TOY OCIOSOOOOOOOOOOOOOO");
+            printf("\n[%d] CPU Ocioso durante 1 segundo\n",segundoActual);
             sleep(1);
             enlace l = listaProcesosTerminados;
             while (l && l->siguiente) l = l->siguiente;
