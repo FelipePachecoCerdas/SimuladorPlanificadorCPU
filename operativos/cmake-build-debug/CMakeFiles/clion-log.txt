@@ -1,18 +1,4 @@
 /home/jdtm23/Downloads/CLion-2020.2.4/clion-2020.2.4/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/jdtm23/Documents/SimuladorPlanificadorCPU/operativos
--- The C compiler identification is GNU 9.3.0
--- Check for working C compiler: /usr/bin/cc
--- Check for working C compiler: /usr/bin/cc - works
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Detecting C compile features
--- Detecting C compile features - done
--- Looking for pthread.h
--- Looking for pthread.h - found
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
--- Check if compiler accepts -pthread
--- Check if compiler accepts -pthread - yes
--- Found Threads: TRUE  
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/jdtm23/Documents/SimuladorPlanificadorCPU/operativos/cmake-build-debug

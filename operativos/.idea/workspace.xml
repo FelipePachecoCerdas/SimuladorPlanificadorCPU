@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -59,14 +62,15 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="RunManager">
-    <configuration name="OpCliente" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OpCliente" TARGET_NAME="OpCliente" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="OpCliente" RUN_TARGET_NAME="OpCliente">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="OpCliente" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OpCliente" TARGET_NAME="OpCliente" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="OpCliente" RUN_TARGET_NAME="OpCliente">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -90,6 +94,7 @@
       <workItem from="1603992815134" duration="25010000" />
       <workItem from="1604039187638" duration="12413000" />
       <workItem from="1604073602230" duration="18593000" />
+      <workItem from="1606784266926" duration="6723000" />
     </task>
     <servers />
   </component>
@@ -113,30 +118,34 @@
       <screen x="67" y="27" width="1293" height="676" />
     </state>
     <state x="496" y="123" width="424" height="484" key="FileChooserDialogImpl/67.27.1293.676@67.27.1293.676" timestamp="1603928180092" />
-    <state width="923" height="796" key="GridCell.Tab.0.bottom" timestamp="1604108544702">
-      <screen x="72" y="27" width="1846" height="861" />
+    <state width="924" height="477" key="GridCell.Tab.0.bottom" timestamp="1606790318226">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state width="1247" height="224" key="GridCell.Tab.0.bottom/67.27.1293.676@67.27.1293.676" timestamp="1604053200315" />
     <state width="1600" height="432" key="GridCell.Tab.0.bottom/72.27.1646.861@72.27.1646.861" timestamp="1604081547738" />
     <state width="923" height="796" key="GridCell.Tab.0.bottom/72.27.1846.861@72.27.1846.861" timestamp="1604108544702" />
-    <state width="923" height="796" key="GridCell.Tab.0.center" timestamp="1604108544701">
-      <screen x="72" y="27" width="1846" height="861" />
+    <state width="924" height="477" key="GridCell.Tab.0.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1606790318226" />
+    <state width="924" height="477" key="GridCell.Tab.0.center" timestamp="1606790318224">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state width="1247" height="224" key="GridCell.Tab.0.center/67.27.1293.676@67.27.1293.676" timestamp="1604053200314" />
     <state width="1600" height="432" key="GridCell.Tab.0.center/72.27.1646.861@72.27.1646.861" timestamp="1604081547737" />
     <state width="923" height="796" key="GridCell.Tab.0.center/72.27.1846.861@72.27.1846.861" timestamp="1604108544701" />
-    <state width="923" height="796" key="GridCell.Tab.0.left" timestamp="1604108544700">
-      <screen x="72" y="27" width="1846" height="861" />
+    <state width="924" height="477" key="GridCell.Tab.0.center/72.27.1848.1053@72.27.1848.1053" timestamp="1606790318224" />
+    <state width="924" height="477" key="GridCell.Tab.0.left" timestamp="1606790318222">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state width="1247" height="224" key="GridCell.Tab.0.left/67.27.1293.676@67.27.1293.676" timestamp="1604053200313" />
     <state width="1600" height="432" key="GridCell.Tab.0.left/72.27.1646.861@72.27.1646.861" timestamp="1604081547735" />
     <state width="923" height="796" key="GridCell.Tab.0.left/72.27.1846.861@72.27.1846.861" timestamp="1604108544700" />
-    <state width="923" height="796" key="GridCell.Tab.0.right" timestamp="1604108544702">
-      <screen x="72" y="27" width="1846" height="861" />
+    <state width="924" height="477" key="GridCell.Tab.0.left/72.27.1848.1053@72.27.1848.1053" timestamp="1606790318222" />
+    <state width="924" height="477" key="GridCell.Tab.0.right" timestamp="1606790318225">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state width="1247" height="224" key="GridCell.Tab.0.right/67.27.1293.676@67.27.1293.676" timestamp="1604053200315" />
     <state width="1600" height="432" key="GridCell.Tab.0.right/72.27.1646.861@72.27.1646.861" timestamp="1604081547737" />
     <state width="923" height="796" key="GridCell.Tab.0.right/72.27.1846.861@72.27.1846.861" timestamp="1604108544701" />
+    <state width="924" height="477" key="GridCell.Tab.0.right/72.27.1848.1053@72.27.1848.1053" timestamp="1606790318225" />
     <state width="777" height="263" key="GridCell.Tab.1.bottom" timestamp="1604077919531">
       <screen x="72" y="27" width="1646" height="861" />
     </state>
@@ -157,5 +166,13 @@
     </state>
     <state width="1247" height="192" key="GridCell.Tab.1.right/67.27.1293.676@67.27.1293.676" timestamp="1603961727594" />
     <state width="777" height="263" key="GridCell.Tab.1.right/72.27.1646.861@72.27.1646.861" timestamp="1604077919531" />
+    <state x="198" y="252" key="run.anything.popup" timestamp="1606790258151">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="198" y="252" key="run.anything.popup/72.27.1848.1053@72.27.1848.1053" timestamp="1606790258151" />
+    <state x="197" y="259" width="672" height="678" key="search.everywhere.popup" timestamp="1606787788699">
+      <screen x="72" y="27" width="1848" height="1053" />
+    </state>
+    <state x="197" y="259" width="672" height="678" key="search.everywhere.popup/72.27.1848.1053@72.27.1848.1053" timestamp="1606787788699" />
   </component>
 </project>

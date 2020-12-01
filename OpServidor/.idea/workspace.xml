@@ -63,12 +63,12 @@
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RunManager">
-    <configuration name="OpServidor" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OpServidor" TARGET_NAME="OpServidor" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="OpServidor" RUN_TARGET_NAME="OpServidor">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="OpServidor" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OpServidor" TARGET_NAME="OpServidor" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="OpServidor" RUN_TARGET_NAME="OpServidor">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -91,6 +91,7 @@
       <workItem from="1603992802267" duration="29635000" />
       <workItem from="1604039264137" duration="13563000" />
       <workItem from="1604073602199" duration="21392000" />
+      <workItem from="1606784275146" duration="5691000" />
     </task>
     <servers />
   </component>
@@ -122,30 +123,34 @@
       <screen x="67" y="27" width="1293" height="676" />
     </state>
     <state x="496" y="123" width="424" height="484" key="FileChooserDialogImpl/67.27.1293.676@67.27.1293.676" timestamp="1603928203473" />
-    <state width="923" height="796" key="GridCell.Tab.0.bottom" timestamp="1604108548465">
-      <screen x="72" y="27" width="1846" height="861" />
+    <state width="924" height="678" key="GridCell.Tab.0.bottom" timestamp="1606790290255">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state width="1247" height="432" key="GridCell.Tab.0.bottom/67.27.1293.676@67.27.1293.676" timestamp="1604053209745" />
     <state width="1600" height="336" key="GridCell.Tab.0.bottom/72.27.1646.861@72.27.1646.861" timestamp="1604081551717" />
     <state width="923" height="796" key="GridCell.Tab.0.bottom/72.27.1846.861@72.27.1846.861" timestamp="1604108548465" />
-    <state width="923" height="796" key="GridCell.Tab.0.center" timestamp="1604108548463">
-      <screen x="72" y="27" width="1846" height="861" />
+    <state width="924" height="678" key="GridCell.Tab.0.bottom/72.27.1848.1053@72.27.1848.1053" timestamp="1606790290255" />
+    <state width="924" height="678" key="GridCell.Tab.0.center" timestamp="1606790290253">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state width="1247" height="432" key="GridCell.Tab.0.center/67.27.1293.676@67.27.1293.676" timestamp="1604053209742" />
     <state width="1600" height="336" key="GridCell.Tab.0.center/72.27.1646.861@72.27.1646.861" timestamp="1604081551715" />
     <state width="923" height="796" key="GridCell.Tab.0.center/72.27.1846.861@72.27.1846.861" timestamp="1604108548463" />
-    <state width="923" height="796" key="GridCell.Tab.0.left" timestamp="1604108548462">
-      <screen x="72" y="27" width="1846" height="861" />
+    <state width="924" height="678" key="GridCell.Tab.0.center/72.27.1848.1053@72.27.1848.1053" timestamp="1606790290253" />
+    <state width="924" height="678" key="GridCell.Tab.0.left" timestamp="1606790290252">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state width="1247" height="432" key="GridCell.Tab.0.left/67.27.1293.676@67.27.1293.676" timestamp="1604053209741" />
     <state width="1600" height="336" key="GridCell.Tab.0.left/72.27.1646.861@72.27.1646.861" timestamp="1604081551714" />
     <state width="923" height="796" key="GridCell.Tab.0.left/72.27.1846.861@72.27.1846.861" timestamp="1604108548462" />
-    <state width="923" height="796" key="GridCell.Tab.0.right" timestamp="1604108548464">
-      <screen x="72" y="27" width="1846" height="861" />
+    <state width="924" height="678" key="GridCell.Tab.0.left/72.27.1848.1053@72.27.1848.1053" timestamp="1606790290252" />
+    <state width="924" height="678" key="GridCell.Tab.0.right" timestamp="1606790290253">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state width="1247" height="432" key="GridCell.Tab.0.right/67.27.1293.676@67.27.1293.676" timestamp="1604053209744" />
     <state width="1600" height="336" key="GridCell.Tab.0.right/72.27.1646.861@72.27.1646.861" timestamp="1604081551716" />
     <state width="923" height="796" key="GridCell.Tab.0.right/72.27.1846.861@72.27.1846.861" timestamp="1604108548464" />
+    <state width="924" height="678" key="GridCell.Tab.0.right/72.27.1848.1053@72.27.1848.1053" timestamp="1606790290253" />
     <state width="777" height="211" key="GridCell.Tab.1.bottom" timestamp="1604079549501">
       <screen x="72" y="27" width="1646" height="861" />
     </state>
@@ -166,10 +171,11 @@
       <screen x="67" y="27" width="1293" height="676" />
     </state>
     <state x="202" y="27" width="1012" height="676" key="SettingsEditor/67.27.1293.676@67.27.1293.676" timestamp="1604047850692" />
-    <state x="377" y="159" key="run.anything.popup" timestamp="1604046502208">
-      <screen x="67" y="27" width="1293" height="676" />
+    <state x="515" y="233" key="run.anything.popup" timestamp="1606784717231">
+      <screen x="72" y="27" width="1848" height="1053" />
     </state>
     <state x="377" y="159" key="run.anything.popup/67.27.1293.676@67.27.1293.676" timestamp="1604046502208" />
+    <state x="515" y="233" key="run.anything.popup/72.27.1848.1053@72.27.1848.1053" timestamp="1606784717231" />
     <state x="376" y="27" width="672" height="678" key="search.everywhere.popup" timestamp="1604041213194">
       <screen x="67" y="27" width="1293" height="676" />
     </state>

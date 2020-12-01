@@ -54,7 +54,7 @@ struct proceso_PCB {
     enlace siguiente;
 };
 
-int pidActual = 0, segundoActual = 0,quantum;
+int pidActual = 0, segundoActual = 0,quantum, master_socket;
 
 int procesoIniciado=FALSE;
 
@@ -334,7 +334,7 @@ int insertarProceso(char *informacion) {
 
 void JobScheduler(){
     int opt = TRUE;
-    int master_socket , addrlen , new_socket , client_socket[30] ,
+    int  addrlen , new_socket , client_socket[30] ,
             max_clients = 30 , activity, i , valread , sd;
     int max_sd;
     struct sockaddr_in address;
@@ -542,6 +542,7 @@ void desplegarColaProcesos(enlace listaProcesosImprimir) {
 
 void detenerSimulacion() {
     // Se van a matar los hilos por seguridad
+    close(master_socket);
     pthread_cancel(hiloJobScheduler);
     pthread_cancel(hiloTimer);
 
@@ -565,6 +566,7 @@ void detenerSimulacion() {
     printf("\nPromedio de Turn Around Time: %f\n", promedioTAT);
 
     pthread_cancel(hiloCpuScheduler);
+
 }
 
 int main() {

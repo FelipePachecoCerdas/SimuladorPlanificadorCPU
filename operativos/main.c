@@ -42,7 +42,7 @@ struct paramsAuto {
 
 typedef struct paramsAuto* p_paramsAuto;
 
-int masProcesos = 1;
+int masProcesos = 1, restante = 0, tiempo = -2, tiempoPrincipal = 0;
 
 int crearClienteSocket(char *informacionProceso){
     int sock = 0, valread;
@@ -63,7 +63,8 @@ int crearClienteSocket(char *informacionProceso){
     }
 
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-        printf("\nConnection Failed \n");
+        printf("\nHa fallado la conexion con el servidor por lo que se detendra la creacion de mas procesos\n");
+        masProcesos = 0;
         return -1;
     }
 
@@ -85,7 +86,11 @@ void avisarFinProcesos() {
 }
 
 void hacerProcesoManual(char *linea){
+    if (!masProcesos) return;
+    tiempo+=restante+2;
+    restante=tiempoPrincipal-2;
     printf("\n---Mensaje del pthread con id %lu---\nSoy el hilo con la informacion para enviar de %sEste hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(),linea, 2);
+    printf("\nEl servidor se encuentra en el segundo [%i] y la informacion llegara al servidor en el segundo [%i]\n",(tiempo-2 > 0) ? tiempo-2: 0 ,tiempo);
     sleep (2) ; //Espera 2 segundos para enviar la informacion
     crearClienteSocket(linea);
 }
@@ -99,7 +104,7 @@ void ClienteManual (){
     if (fp == NULL)
         exit(1); // No existe el archivo
 
-    while ((read = getline(&linea, &len, fp)) != -1) {
+    while ((read = getline(&linea, &len, fp)) != -1 && masProcesos) {
         //printf("Retrieved line of length %zu:\n", read);
 
         pthread_t hiloProcesoNuevo;
@@ -109,24 +114,27 @@ void ClienteManual (){
         int upper = 8, lower = 3;
         int num = (rand() % (upper - lower + 1)) + lower;
 
-        printf("\n---Mensaje del pthread con id %lu---\nEl hilo se va a dormir %i segundos antes del siguiente proceso\n", pthread_self(), num);
+        printf("\n+++Mensaje del pthread con id %lu [PRINCIPAL]+++\nEl hilo se va a dormir %i segundos antes de crear el siguiente proceso\n", pthread_self(), num);
         sleep (num) ;
     }
     fclose(fp);
     avisarFinProcesos();
+    printf("La creacion de procesos de forma manual se ha detenido\n");
 }
 
 void crearProcesoAutomatico(p_paramsAuto parametros){
+    if (!masProcesos) return;
     int burst = (rand() % (parametros->maxBurst - parametros->minBurst + 1)) + parametros->minBurst;
 
     int upperPriori = 5, lowerPriori = 1;
     int prioridad = (rand() % (upperPriori - lowerPriori + 1)) + lowerPriori;
-
     char * str = malloc(1024);
     snprintf(str, 1024, "%i %i", burst, prioridad);
    // printf("%s", str);
-
+    tiempo+=restante+2;
+    restante=tiempoPrincipal-2;
     printf("\n---Mensaje del pthread con id %lu---\nSoy el hilo con la informacion para enviar de %s\nEste hilo se va a dormir %i segundos antes de enviar los datos\n", pthread_self(),str, 2);
+    printf("\nEl servidor se encuentra en el segundo [%i] y la informacion llegara al servidor en el segundo [%i]\n",(tiempo-2 > 0) ? tiempo-2: 0 ,tiempo);
     sleep (2) ; //Espera 2 segundos para enviar la informacion
     crearClienteSocket(str);
 }
@@ -172,12 +180,12 @@ void ClienteAutomatico(){
     while (masProcesos) {
 
         pthread_t  hiloProcesoNuevo;
+        int tiempoDormir = (rand() % (parametros->tasaMax - parametros->tasaMin + 1)) + parametros->tasaMin;
+        tiempoPrincipal=tiempoDormir;
         pthread_create(&hiloProcesoNuevo, NULL , crearProcesoAutomatico , parametros);
         //pthread_join(hiloProcesoNuevo, NULL);
 
-        int tiempoDormir = (rand() % (parametros->tasaMax - parametros->tasaMin + 1)) + parametros->tasaMin;
-
-        printf("\n---Mensaje del pthread con id %lu---\nEl hilo se va a dormir %i segundos antes del siguiente proceso\n", pthread_self(), tiempoDormir);
+        printf("\n+++Mensaje del pthread con id %lu [PRINCIPAL]+++\nEl hilo se va a dormir %i segundos antes del crear el siguiente proceso\n", pthread_self(), tiempoDormir);
         sleep(tiempoDormir);
     }
     printf("\nLa creacion de procesos de forma automatica se ha detenido\n");
