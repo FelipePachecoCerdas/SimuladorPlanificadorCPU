@@ -21,6 +21,30 @@
 #define FALSE  0
 #define PORT 8080
 
+/*
+Instituto Tecnológico de Costa Rica
+Escuela de Ingeniería en Computación
+
+Principios de Sistemas Operativos
+
+Documentación del Primer Proyecto Programado: 
+    Simulador de Planificador de CPU
+
+Realizado por:
+    Bernold Abarca Zúñiga, 2018113109
+    Felipe Pacheco Cerdas, 2018114503
+    Jeremy Tencio Morales, 2018087030
+
+Profesora:
+    Ericka Marín Shumann
+
+Fecha de Entrega: 
+    30/10/2020
+
+II Semestre 2020
+*/
+
+
 struct proceso_PCB;
 
 typedef struct proceso_PCB* enlace;

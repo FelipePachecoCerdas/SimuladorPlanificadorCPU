@@ -3,11 +3,34 @@
 #include  <string.h>
 #include  <unistd.h>
 #include  <pthread.h>
-
+#include  <time.h>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #define PORT 8080
+
+/*
+Instituto Tecnológico de Costa Rica
+Escuela de Ingeniería en Computación
+
+Principios de Sistemas Operativos
+
+Documentación del Primer Proyecto Programado: 
+    Simulador de Planificador de CPU
+
+Realizado por:
+    Bernold Abarca Zúñiga, 2018113109
+    Felipe Pacheco Cerdas, 2018114503
+    Jeremy Tencio Morales, 2018087030
+
+Profesora:
+    Ericka Marín Shumann
+
+Fecha de Entrega: 
+    30/10/2020
+
+II Semestre 2020
+*/
 
 struct paramsAuto {
     int maxBurst;
@@ -162,6 +185,10 @@ void ClienteAutomatico(){
 #pragma clang diagnostic pop
 
 int  main() {
+    // Semilla de aleatoriedad arbitraria para que cada
+    // ejecución resulte distinta
+    srand (time(NULL));
+
     printf("!Bienvenido al Cliente del Simulador del Planificador de CPU!\n\n");
 
     printf("*** Opciones para los Modos de Creacion de Procesos para el Simulador ***\n");
